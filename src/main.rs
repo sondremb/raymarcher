@@ -124,7 +124,23 @@ pub mod linalg {
             assert_eq!(vec.normalized().len(), 1.0);
         }
 
-        // TODO tests for dot and cross
+        #[test]
+        fn dot() {
+            let vec1 = vec3!(1, 2, 3);
+            let vec2 = vec3!(-5, -2, 3);
+            assert_eq!(vec1.dot(&vec2), 0.0);
+            assert_eq!(vec1.dot(&vec1).sqrt(), vec1.len());
+        }
+
+        #[test]
+        fn cross() {
+            let vec1 = vec3!(5, 2, -4);
+            let vec2 = vec3!(-2.5, -1, 2);
+            assert_eq!(vec1.cross(&vec2), vec3!(0));
+            let vec1 = vec3!(1, 0, 0);
+            let vec2 = vec3!(0, 1, 0);
+            assert_eq!(vec1.cross(&vec2), vec3!(0, 0, 1));
+        }
 
         macro_rules! generate_op_test {
             ($name:ident; $lhs:expr, $op:tt, $rhs:expr => $ans:expr) => {
@@ -163,7 +179,11 @@ pub mod linalg {
         generate_op_test!((assign) div_assign_vec; vec3!(44), /=, vec3!(4) => vec3!(11));
         generate_op_test!((assign) div_assign_float; vec3!(99), /=, 3.0 => vec3!(33));
 
-        // TODO test Neg
+        #[test]
+        fn neg() {
+            let vec = vec3!(1, -2, 3);
+            assert_eq!(-vec, vec3!(-1, 2, -3));
+        }
     }
 }
 
