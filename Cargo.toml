@@ -1,0 +1,7 @@
+[package]
+name = "raymarcher"
+version = "0.1.0"
+authors = ["sondremb"]
+edition = "2018"
+
+[dependencies]
