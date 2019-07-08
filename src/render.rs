@@ -1,5 +1,6 @@
 use image::{DynamicImage, GenericImage, Rgba};
 use crate::linalg::Vec3;
+use crate::objects::Scene;
 
 pub struct ViewPort {
     pub pos: Vec3,
@@ -16,7 +17,7 @@ impl ViewPort {
         let forward = forward.normalized();
         let right = forward.cross(&up).normalized();
         let up = right.cross(&forward).normalized();
-        let delta = 2.0 * (fov / 2.0).tan() / (width as f64);
+        let delta = 2.0 * (fov.to_radians() / 2.0).tan() / (width as f64);
         ViewPort {
             pos: pos.clone(),
             forward,
@@ -36,25 +37,25 @@ impl ViewPort {
     }
 }
 
-pub fn render(port: &ViewPort) -> DynamicImage {
+pub fn render(port: &ViewPort, scene: &Scene) -> DynamicImage {
     let mut image = DynamicImage::new_luma8(port.width, port.height);
     for y in 0..port.height {
         for x in 0..port.width {
             let ray = port.ray_from_pixel(x, y);
-            image.put_pixel(x, y, cast_ray(&port.pos, &ray));
+            image.put_pixel(x, y, cast_ray(&port.pos, &ray, scene));
         }
     }
     image
 }
 
-fn cast_ray(from: &Vec3, dir: &Vec3) -> Rgba<u8> {
+fn cast_ray(from: &Vec3, dir: &Vec3, scene: &Scene) -> Rgba<u8> {
     const max_steps: u8 = 100;
     let mut total_dist = 0.0;
     let mut steps = 0;
     for i in 0..max_steps {
         steps = i;
         let p = *from + *dir * total_dist;
-        let dist = distance_estimator(&p);
+        let dist = scene.distance_estimator(&p);
         total_dist += dist;
         if dist < 0.0001 {
             break;
@@ -63,11 +64,4 @@ fn cast_ray(from: &Vec3, dir: &Vec3) -> Rgba<u8> {
     let intensity = 1.0 - steps as f64 / max_steps as f64;
     let intensity = (intensity * 255.0) as u8;
     Rgba([intensity, intensity, intensity, 255])
-}
-
-// TODO this should be in a Scene object
-fn distance_estimator(z: &Vec3) -> f64 {
-    let sphere_origin = Vec3::new(0.0, 0.0, 2.0);
-    let sphere_radius = 1.0;
-    (sphere_origin - *z).len() - sphere_radius
 }
