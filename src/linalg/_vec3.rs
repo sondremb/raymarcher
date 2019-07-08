@@ -1,16 +1,12 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign, Rem};
+use crate::linalg::Vec2;
+use crate::linalg::Vec4;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
     pub z: f64
-}
-
-#[macro_export]
-macro_rules! vec3 {
-    ($x:expr, $y:expr, $z:expr) => {Vec3::new($x as f64, $y as f64, $z as f64)}; 
-    ($one:expr) => {Vec3::new($one as f64, $one as f64, $one as f64)};
 }
 
 impl Vec3 {
@@ -71,38 +67,6 @@ impl Vec3 {
     }
 }
 
-macro_rules! impl_vec_ops {
-    ($type:ty; [$($var:ident),+]  ($op_trait:ident, $op_fn:ident, $op_assign_trait:ident, $op_assign_fn:ident => $op:tt)) => {
-
-        impl $op_trait for $type {
-            type Output = Self;
-            fn $op_fn(self, rhs: Self) -> Self {
-                Self { $($var: self.$var $op rhs.$var),+ }
-            }
-        }
-
-        impl $op_trait<f64> for $type {
-            type Output = Self;
-            fn $op_fn(self, rhs: f64) -> Self {
-                Self { $($var: self.$var $op rhs),+ }
-            }
-        }
-
-        impl $op_assign_trait for $type {
-            fn $op_assign_fn(&mut self, rhs: Self) {
-                *self = *self $op rhs;
-            }
-        }
-
-        impl $op_assign_trait<f64> for $type {
-            fn $op_assign_fn(&mut self, rhs: f64) {
-                *self = *self $op rhs;
-            }
-        }
-
-    };
-}
-
 impl_vec_ops!(Vec3; [x, y, z] (Add, add, AddAssign, add_assign => +));
 impl_vec_ops!(Vec3; [x, y, z] (Sub, sub, SubAssign, sub_assign => -));
 impl_vec_ops!(Vec3; [x, y, z] (Mul, mul, MulAssign, mul_assign => *));
@@ -126,17 +90,125 @@ impl Rem<f64> for Vec3 {
     }
 }
 
-macro_rules! swizzle {
-    ($name:ident, $ax1:ident, $ax2:ident, $ax3:ident) => {
-        impl Vec3 {
-            pub fn $name(&self) -> Self {
-                vec3!(self.$ax1, self.$ax2, self.$ax3)
-            }
-        }
-    };
-}
-
-swizzle!(xxx, x, x, x);
+// This is but a drop in the ocean compared to Vec4
+// You have been warned
+swizzle!((Vec3) xx, x, x);
+swizzle!((Vec3) xy, x, y);
+swizzle!((Vec3) xz, x, z);
+swizzle!((Vec3) yx, y, x);
+swizzle!((Vec3) yy, y, y);
+swizzle!((Vec3) yz, y, z);
+swizzle!((Vec3) zx, z, x);
+swizzle!((Vec3) zy, z, y);
+swizzle!((Vec3) zz, z, z);
+swizzle!((Vec3) xxx, x, x, x);
+swizzle!((Vec3) xxy, x, x, y);
+swizzle!((Vec3) xxz, x, x, z);
+swizzle!((Vec3) xyx, x, y, x);
+swizzle!((Vec3) xyy, x, y, y);
+swizzle!((Vec3) xyz, x, y, z);
+swizzle!((Vec3) xzx, x, z, x);
+swizzle!((Vec3) xzy, x, z, y);
+swizzle!((Vec3) xzz, x, z, z);
+swizzle!((Vec3) yxx, y, x, x);
+swizzle!((Vec3) yxy, y, x, y);
+swizzle!((Vec3) yxz, y, x, z);
+swizzle!((Vec3) yyx, y, y, x);
+swizzle!((Vec3) yyy, y, y, y);
+swizzle!((Vec3) yyz, y, y, z);
+swizzle!((Vec3) yzx, y, z, x);
+swizzle!((Vec3) yzy, y, z, y);
+swizzle!((Vec3) yzz, y, z, z);
+swizzle!((Vec3) zxx, z, x, x);
+swizzle!((Vec3) zxy, z, x, y);
+swizzle!((Vec3) zxz, z, x, z);
+swizzle!((Vec3) zyx, z, y, x);
+swizzle!((Vec3) zyy, z, y, y);
+swizzle!((Vec3) zyz, z, y, z);
+swizzle!((Vec3) zzx, z, z, x);
+swizzle!((Vec3) zzy, z, z, y);
+swizzle!((Vec3) zzz, z, z, z);
+swizzle!((Vec3) xxxx, x, x, x, x);
+swizzle!((Vec3) xxxy, x, x, x, y);
+swizzle!((Vec3) xxxz, x, x, x, z);
+swizzle!((Vec3) xxyx, x, x, y, x);
+swizzle!((Vec3) xxyy, x, x, y, y);
+swizzle!((Vec3) xxyz, x, x, y, z);
+swizzle!((Vec3) xxzx, x, x, z, x);
+swizzle!((Vec3) xxzy, x, x, z, y);
+swizzle!((Vec3) xxzz, x, x, z, z);
+swizzle!((Vec3) xyxx, x, y, x, x);
+swizzle!((Vec3) xyxy, x, y, x, y);
+swizzle!((Vec3) xyxz, x, y, x, z);
+swizzle!((Vec3) xyyx, x, y, y, x);
+swizzle!((Vec3) xyyy, x, y, y, y);
+swizzle!((Vec3) xyyz, x, y, y, z);
+swizzle!((Vec3) xyzx, x, y, z, x);
+swizzle!((Vec3) xyzy, x, y, z, y);
+swizzle!((Vec3) xyzz, x, y, z, z);
+swizzle!((Vec3) xzxx, x, z, x, x);
+swizzle!((Vec3) xzxy, x, z, x, y);
+swizzle!((Vec3) xzxz, x, z, x, z);
+swizzle!((Vec3) xzyx, x, z, y, x);
+swizzle!((Vec3) xzyy, x, z, y, y);
+swizzle!((Vec3) xzyz, x, z, y, z);
+swizzle!((Vec3) xzzx, x, z, z, x);
+swizzle!((Vec3) xzzy, x, z, z, y);
+swizzle!((Vec3) xzzz, x, z, z, z);
+swizzle!((Vec3) yxxx, y, x, x, x);
+swizzle!((Vec3) yxxy, y, x, x, y);
+swizzle!((Vec3) yxxz, y, x, x, z);
+swizzle!((Vec3) yxyx, y, x, y, x);
+swizzle!((Vec3) yxyy, y, x, y, y);
+swizzle!((Vec3) yxyz, y, x, y, z);
+swizzle!((Vec3) yxzx, y, x, z, x);
+swizzle!((Vec3) yxzy, y, x, z, y);
+swizzle!((Vec3) yxzz, y, x, z, z);
+swizzle!((Vec3) yyxx, y, y, x, x);
+swizzle!((Vec3) yyxy, y, y, x, y);
+swizzle!((Vec3) yyxz, y, y, x, z);
+swizzle!((Vec3) yyyx, y, y, y, x);
+swizzle!((Vec3) yyyy, y, y, y, y);
+swizzle!((Vec3) yyyz, y, y, y, z);
+swizzle!((Vec3) yyzx, y, y, z, x);
+swizzle!((Vec3) yyzy, y, y, z, y);
+swizzle!((Vec3) yyzz, y, y, z, z);
+swizzle!((Vec3) yzxx, y, z, x, x);
+swizzle!((Vec3) yzxy, y, z, x, y);
+swizzle!((Vec3) yzxz, y, z, x, z);
+swizzle!((Vec3) yzyx, y, z, y, x);
+swizzle!((Vec3) yzyy, y, z, y, y);
+swizzle!((Vec3) yzyz, y, z, y, z);
+swizzle!((Vec3) yzzx, y, z, z, x);
+swizzle!((Vec3) yzzy, y, z, z, y);
+swizzle!((Vec3) yzzz, y, z, z, z);
+swizzle!((Vec3) zxxx, z, x, x, x);
+swizzle!((Vec3) zxxy, z, x, x, y);
+swizzle!((Vec3) zxxz, z, x, x, z);
+swizzle!((Vec3) zxyx, z, x, y, x);
+swizzle!((Vec3) zxyy, z, x, y, y);
+swizzle!((Vec3) zxyz, z, x, y, z);
+swizzle!((Vec3) zxzx, z, x, z, x);
+swizzle!((Vec3) zxzy, z, x, z, y);
+swizzle!((Vec3) zxzz, z, x, z, z);
+swizzle!((Vec3) zyxx, z, y, x, x);
+swizzle!((Vec3) zyxy, z, y, x, y);
+swizzle!((Vec3) zyxz, z, y, x, z);
+swizzle!((Vec3) zyyx, z, y, y, x);
+swizzle!((Vec3) zyyy, z, y, y, y);
+swizzle!((Vec3) zyyz, z, y, y, z);
+swizzle!((Vec3) zyzx, z, y, z, x);
+swizzle!((Vec3) zyzy, z, y, z, y);
+swizzle!((Vec3) zyzz, z, y, z, z);
+swizzle!((Vec3) zzxx, z, z, x, x);
+swizzle!((Vec3) zzxy, z, z, x, y);
+swizzle!((Vec3) zzxz, z, z, x, z);
+swizzle!((Vec3) zzyx, z, z, y, x);
+swizzle!((Vec3) zzyy, z, z, y, y);
+swizzle!((Vec3) zzyz, z, z, y, z);
+swizzle!((Vec3) zzzx, z, z, z, x);
+swizzle!((Vec3) zzzy, z, z, z, y);
+swizzle!((Vec3) zzzz, z, z, z, z);
 
 #[cfg(test)]
 mod tests {
@@ -197,23 +269,6 @@ mod tests {
         assert_eq!(vec1.cross(&vec2), vec3!(0, 0, 1));
     }
 
-    macro_rules! generate_op_test {
-        ($name:ident; $lhs:expr, $op:tt, $rhs:expr => $ans:expr) => {
-            #[test]
-            fn $name() {
-                assert_eq!($lhs $op $rhs, $ans);
-            }
-        };
-        ((assign) $name:ident; $lhs:expr, $op:tt, $rhs:expr => $ans:expr) => {
-            #[test]
-            fn $name() {
-                let mut lhs = $lhs;
-                lhs $op $rhs;
-                assert_eq!(lhs, $ans);
-            }
-        };
-    }
-
     generate_op_test!(add_vec; vec3!(1), +, vec3!(2) => vec3!(3));
     generate_op_test!(add_float; vec3!(1), +, 0.2 => vec3!(1.2));
     generate_op_test!((assign) add_assign_vecs; vec3!(1), +=, vec3!(2) => vec3!(3));
@@ -238,5 +293,11 @@ mod tests {
     fn neg() {
         let vec = vec3!(1, -2, 3);
         assert_eq!(-vec, vec3!(-1, 2, -3));
+    }
+
+    #[test]
+    fn swizzle_assign() {
+        let vec = vec3!(1.0, 2.0, 3.0);
+        assert_eq!(vec3!(v2 vec.yx(), 5), vec3!(2, 1, 5));
     }
 }
