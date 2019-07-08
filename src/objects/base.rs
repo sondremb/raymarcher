@@ -19,3 +19,26 @@ impl Scene {
 pub trait Object {
     fn distance_estimator(&self, z: &Vec3) -> f64;
 }
+
+pub struct Union<T: Object, U: Object>(pub T, pub U);
+
+impl<T: Object, U: Object> Object for Union<T, U> {
+    fn distance_estimator(&self, z: &Vec3) -> f64 {
+        self.0.distance_estimator(z).min(self.1.distance_estimator(z))
+    }
+}
+pub struct Subtract<T: Object, U: Object>(pub T, pub U);
+
+impl<T: Object, U: Object> Object for Subtract<T, U> {
+    fn distance_estimator(&self, z: &Vec3) -> f64 {
+        self.0.distance_estimator(z).max(-self.1.distance_estimator(z))
+    }
+}
+
+pub struct Intersect<T: Object, U: Object>(pub T, pub U);
+
+impl<T: Object, U: Object> Object for Intersect<T, U> {
+    fn distance_estimator(&self, z: &Vec3) -> f64 {
+        self.0.distance_estimator(z).max(self.1.distance_estimator(z))
+    }
+}

@@ -22,8 +22,7 @@ fn main() {
     let mut scene = Scene::new();
     let b = Cube::new(&vec3!(0.75));
     let s = Sphere::new(1.0);
-    scene.add(b);
-    scene.add(s);
+    scene.add(Subtract(b, s));
     let image = render(&port, &scene);
     image.save(image_path).unwrap();
 }
