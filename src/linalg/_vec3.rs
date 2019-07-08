@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign, Rem};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vec3 {
@@ -36,6 +36,38 @@ impl Vec3 {
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x
         )
+    }
+
+    pub fn abs(&self) -> Self {
+        vec3!(
+            self.x.abs(),
+            self.y.abs(),
+            self.z.abs()
+        )
+    }
+
+    pub fn min(&self, num: f64) -> Self {
+        vec3!(
+            self.x.min(num),
+            self.y.min(num),
+            self.z.min(num)
+        )
+    }
+
+    pub fn max(&self, num: f64) -> Self {
+        vec3!(
+            self.x.max(num),
+            self.y.max(num),
+            self.z.max(num)
+        )
+    }
+
+    pub fn clamp(&self, lower: f64, upper: f64) -> Self {
+        self.max(lower).min(upper)
+    }
+
+    pub fn modulo(&self, modulus: f64) -> Self {
+        ((*self % modulus) + modulus) % modulus
     }
 }
 
@@ -80,6 +112,17 @@ impl Neg for Vec3 {
     type Output = Self;
     fn neg(self) -> Self {
         vec3!(-self.x, -self.y, -self.z)
+    }
+}
+
+impl Rem<f64> for Vec3 {
+    type Output = Self;
+    fn rem(self, rhs: f64) -> Self {
+        vec3!(
+            self.x % rhs,
+            self.y % rhs,
+            self.z % rhs
+        )
     }
 }
 
